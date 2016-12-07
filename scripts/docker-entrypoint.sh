@@ -5,7 +5,7 @@ if [[ -n "$DEBUG" ]]; then
 fi
 
 DUMP_INTERVAL=${DUMP_INTERVAL:-1440}
-DUMP_BEGIN=${DUMP_BEGIN:-900}
+DUMP_BEGIN=${DUMP_BEGIN:-15}
 DUMP_PREFIX=${DUMP_PREFIX:-db_}
 DB_HOST=${DB_HOST:-127.0.0.1}
 TIMEZONE=${TIMEZONE:-Europe/Moscow}
@@ -13,7 +13,7 @@ TIMEZONE=${TIMEZONE:-Europe/Moscow}
 echo $TIMEZONE | tee /etc/timezone
 dpkg-reconfigure --frontend noninteractive tzdata
 
-sleep $DUMP_BEGIN
+sleep $((DUMP_BEGIN*60))
 
 while true; do
     backup_date=`date +"%G-%m-%d_%H_%M_%S"`
