@@ -6,6 +6,7 @@ fi
 
 DUMP_INTERVAL=${DUMP_INTERVAL:-1440}
 DUMP_BEGIN=${DUMP_BEGIN:-900}
+DUMP_PREFIX=${DUMP_PREFIX:-db_}
 DB_HOST=${DB_HOST:-127.0.0.1}
 TIMEZONE=${TIMEZONE:-Europe/Moscow}
 
@@ -16,7 +17,7 @@ sleep $DUMP_BEGIN
 
 while true; do
     backup_date=`date +"%G-%m-%d_%H_%M_%S"`
-    backup_file=/backup/$backup_date.sql.gz
+    backup_file=/backup/${DUMP_PREFIX}${backup_date}.sql.gz
 
     mysqldump -A -h $DB_HOST -u$DB_USER -p$DB_PASSWORD | gzip > $backup_file
 
