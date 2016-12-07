@@ -21,7 +21,7 @@ while true; do
 
     mysqldump -A -h $DB_HOST -u$DB_USER -p$DB_PASSWORD | gzip > $backup_file
 
-    if [[ -z $BACKUP_USER && -z $BACKUP_PASSWORD && -z $BACKUP_HOST && -z $BACKUP_DIR ]]; then
+    if [[ ! -z $BACKUP_USER && ! -z $BACKUP_PASSWORD && ! -z $BACKUP_HOST && ! -z $BACKUP_DIR ]]; then
 	sshpass -p "$BACKUP_PASSWORD" scp  -o "StrictHostKeyChecking no" $backup_file $BACKUP_USER@$BACKUP_HOST:$BACKUP_DIR
 	rm -f $backup_file
     fi
