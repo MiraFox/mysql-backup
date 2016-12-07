@@ -4,12 +4,15 @@ if [[ -n "$DEBUG" ]]; then
   set -x
 fi
 
-DB_DUMP_INTERVAL=${DB_DUMP_INTERVAL:-1440}
+DUMP_INTERVAL=${DUMP_INTERVAL:-1440}
+DUMP_BEGIN=${DUMP_BEGIN:-900}
 DB_HOST=${DB_HOST:-127.0.0.1}
 TIMEZONE=${TIMEZONE:-Europe/Moscow}
 
 echo $TIMEZONE | tee /etc/timezone
 dpkg-reconfigure --frontend noninteractive tzdata
+
+sleep $DUMP_BEGIN
 
 while true; do
     backup_date=`date +"%G-%m-%d_%H_%M_%S"`
@@ -17,9 +20,10 @@ while true; do
 
     mysqldump -A -h $DB_HOST -u$DB_USER -p$DB_PASSWORD | gzip > $backup_file
 
-    sshpass -p "$BACKUP_PASSWORD" scp  -o "StrictHostKeyChecking no" $backup_file $BACKUP_USER@$BACKUP_HOST:$BACKUP_DIR
+    if [[ -z $BACKUP_USER && -z $BACKUP_PASSWORD && -z $BACKUP_HOST && -z $BACKUP_DIR ]]; then
+	sshpass -p "$BACKUP_PASSWORD" scp  -o "StrictHostKeyChecking no" $backup_file $BACKUP_USER@$BACKUP_HOST:$BACKUP_DIR
+	rm -f $backup_file
+    fi
 
-    # rm -f $backup_file
-
-    sleep $(($DB_DUMP_INTERVAL*60))
+    sleep $(($DUMP_INTERVAL*60))
 done
